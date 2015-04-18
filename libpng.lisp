@@ -7,12 +7,11 @@
 (push #p"/opt/local/lib/" cffi:*foreign-library-directories*)
 
 (define-foreign-library libpng
-  (:darwin "libpng.dylib")
-  (t (:default "libpng")))
+  (:darwin (:or "libpng.dylib" "libpng12.0.dylib"))
+  (t (:or "libpng12.so" "libpng16.so" "libpng.so")))
+
 
 (use-foreign-library libpng)
-
-(defparameter +png-libpng-ver-string+ (get-png-libpng-ver-string))
 
 ;;; Foreign function definitions.
 
@@ -151,6 +150,17 @@
 
 
 ;;; Input/output.
+
+(defun get-png-version-string ()
+  (let* ((ver (png-access-version-number))
+         micro minor)
+    (setq micro (mod ver 100))
+    (setq ver (/ (- ver micro) 100))
+    (setq minor (mod ver 100))
+    (setq ver (/ (- ver minor) 100))
+    (format nil "~d.~d.~d" ver minor micro)))
+
+(defconstant +png-libpng-ver-string+ (get-png-version-string))
 
 (defvar *stream*)
 
