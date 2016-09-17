@@ -154,7 +154,7 @@
     (setq ver (/ (- ver minor) 100))
     (format nil "~d.~d.~d" ver minor micro)))
 
-(defconstant +png-libpng-ver-string+ (get-png-version-string))
+;; (defconstant +png-libpng-ver-string+ (get-png-version-string))
 
 (defvar *stream*)
 
@@ -208,7 +208,7 @@
     `(let ((,var (,(ecase direction
 			  (:input 'png-create-read-struct)
 			  (:output 'png-create-write-struct))
-		   +png-libpng-ver-string+ (null-pointer)
+		   (get-png-version-string) (null-pointer)
 		   (callback error-fn) (callback warn-fn)))
 	   (*buffer* (make-shareable-byte-vector 1024)))
        (when (null-pointer-p ,var)
