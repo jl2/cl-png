@@ -324,9 +324,9 @@ Signals an error if reading the image fails."
 	    (png-read-image png-ptr row-pointers))
 	  image)))))))
 
-(defun decode-file (pathname &key swapbgr)
+(defun decode-file (pathname &key swapbgr preserve-alpha)
   (with-open-file (input pathname :element-type '(unsigned-byte 8))
-    (decode input :swapbgr swapbgr)))
+    (decode input :swapbgr swapbgr :preserve-alpha preserve-alpha)))
 
 (defun encode (image output &key swapbgr)
   "Writes IMAGE in PNG format to OUTPUT.  The current version always
@@ -345,8 +345,10 @@ Signals an error if writing the image fails."
 	(png-set-ihdr png-ptr info-ptr (image-width image) (image-height image)
 		      (image-bit-depth image) 
 		      (if (= (image-channels image) 1)
-			  +png-color-type-gray+
-			  +png-color-type-rgb+)
+                  +png-color-type-gray+
+                  (if (= (image-channels image) 3)
+                      +png-color-type-rgb+
+                      +png-color-type-rgba+))
 		      +png-interlace-none+ +png-compression-type-default+
 		      +png-filter-type-default+)
 	(when swapBGR
